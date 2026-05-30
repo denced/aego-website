@@ -23,7 +23,7 @@
 
     <main class="legal">
         <h1>Privacy Policy</h1>
-        <p class="updated">Last Updated: May 3, 2026</p>
+        <p class="updated">Last Updated: May 30, 2026</p>
 
         <p>Aego ("we," "our") respects your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights.</p>
 
@@ -43,11 +43,20 @@
             <li>Automation settings (post frequency, rate limits, daily budget, publishing mode)</li>
         </ul>
 
+        <p><strong>Notifications &amp; Usage Data:</strong></p>
+        <ul>
+            <li>A push notification token (provided by Apple via Firebase Cloud Messaging) so we can deliver notifications to your device. It is linked to your account and removed when you sign out.</li>
+            <li>Your device's time zone and a "last active" timestamp, used to schedule activity-digest notifications at sensible times.</li>
+            <li>A daily-streak count, used to power streak milestones in the app.</li>
+            <li>Subscription status (whether you have an active Pro subscription), returned by Apple, used to unlock Pro features.</li>
+        </ul>
+
         <p><strong>Device Data:</strong></p>
         <ul>
-            <li>We do not collect device identifiers, location data, or analytics fingerprints.</li>
-            <li>Crash reports may be collected by Apple if you have opted into sharing with developers.</li>
-            <li>Aggregate, non-identifying analytics events (e.g. "post created") are sent via Firebase Analytics.</li>
+            <li>We do <strong>not</strong> collect advertising identifiers (IDFA), precise location, or cross-app/cross-site tracking fingerprints. We do not track you across other companies' apps or websites.</li>
+            <li>The push token above is a device-scoped identifier used solely to deliver notifications — never for advertising or tracking.</li>
+            <li>Crash reports are collected via Firebase Crashlytics to diagnose stability issues (and by Apple if you have opted into sharing with developers).</li>
+            <li>Aggregate, non-identifying analytics events (e.g. "post created") are sent via Firebase Analytics for app functionality and product analytics.</li>
         </ul>
 
         <h2>2. Data We Do NOT Collect</h2>

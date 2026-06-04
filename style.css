@@ -138,126 +138,40 @@ nav {
     text-align: left;
 }
 
-/* ── Constellation (from app icon) ────────────── */
-.constellation {
+/* ── Living network (delta-ring core + orbiting alter-egos) ── */
+.hero-visual {
     position: relative;
     flex-shrink: 0;
-    width: 380px;
-    height: 380px;
+    width: 420px;
+    height: 420px;
     pointer-events: none;
 }
 
-.star {
+.net-canvas {
     position: absolute;
-    border-radius: 50%;
-    will-change: opacity, transform;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
-/* Center moon — warm cream like the icon */
-.star-center {
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle at 40% 38%, #eae6da, #ddd8c8);
+.net-core {
+    position: absolute;
     top: 50%;
     left: 50%;
+    width: 116px;
+    height: 116px;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 40px rgba(228, 224, 212, 0.12), 0 0 80px rgba(228, 224, 212, 0.05);
-    animation: center-glow 6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 22px rgba(255, 160, 120, 0.35));
+    animation: core-breathe 5.5s ease-in-out infinite alternate;
 }
 
-/* Steel blue — upper left */
-.star-1 {
-    width: 26px;
-    height: 26px;
-    background: radial-gradient(circle at 40% 38%, #8a9dae, #6b7d8e);
-    top: 25%;
-    left: 28%;
-    animation: twinkle 4.2s ease-in-out 0.3s infinite;
+@keyframes core-breathe {
+    0%   { transform: translate(-50%, -50%) scale(0.97); filter: drop-shadow(0 0 16px rgba(255, 140, 120, 0.22)); }
+    100% { transform: translate(-50%, -50%) scale(1.03); filter: drop-shadow(0 0 32px rgba(255, 184, 140, 0.45)); }
 }
 
-/* Slate — small, far upper left */
-.star-2 {
-    width: 14px;
-    height: 14px;
-    background: radial-gradient(circle at 40% 38%, #7a8898, #5a6878);
-    top: 18%;
-    left: 22%;
-    animation: twinkle 5.1s ease-in-out 1.8s infinite;
-}
-
-/* Gold — upper right, larger */
-.star-3 {
-    width: 28px;
-    height: 28px;
-    background: radial-gradient(circle at 40% 38%, #ccaa50, #b69b44);
-    top: 28%;
-    left: 65%;
-    animation: twinkle 3.8s ease-in-out 0.8s infinite;
-}
-
-/* Dark gold — small, upper right */
-.star-4 {
-    width: 12px;
-    height: 12px;
-    background: radial-gradient(circle at 40% 38%, #9e9648, #7e7a3e);
-    top: 20%;
-    left: 60%;
-    animation: twinkle 5.5s ease-in-out 2.4s infinite;
-}
-
-/* Purple/mauve — lower left */
-.star-5 {
-    width: 24px;
-    height: 24px;
-    background: radial-gradient(circle at 40% 38%, #a07aa0, #8e6a8e);
-    top: 65%;
-    left: 24%;
-    animation: twinkle 4.6s ease-in-out 1.2s infinite;
-}
-
-/* Dusty rose — lower center-right */
-.star-6 {
-    width: 16px;
-    height: 16px;
-    background: radial-gradient(circle at 40% 38%, #a06a6e, #8e5a5e);
-    top: 62%;
-    left: 62%;
-    animation: twinkle 5.3s ease-in-out 3.1s infinite;
-}
-
-/* Teal — right side */
-.star-7 {
-    width: 18px;
-    height: 18px;
-    background: radial-gradient(circle at 40% 38%, #5e9e8e, #4e7e6e);
-    top: 48%;
-    left: 78%;
-    animation: twinkle 4.9s ease-in-out 0.6s infinite;
-}
-
-/* Gray — small, far right */
-.star-8 {
-    width: 11px;
-    height: 11px;
-    background: radial-gradient(circle at 40% 38%, #8e8e92, #6e6e72);
-    top: 36%;
-    left: 82%;
-    animation: twinkle 6.2s ease-in-out 2.0s infinite;
-}
-
-/* Olive — lower center */
-.star-center ~ .star-8 {
-    /* intentionally left for 8 dots */
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0.3; transform: scale(0.85); }
-    50%      { opacity: 1;   transform: scale(1);    }
-}
-
-@keyframes center-glow {
-    0%   { box-shadow: 0 0 40px rgba(228, 224, 212, 0.10), 0 0 80px rgba(228, 224, 212, 0.04); }
-    100% { box-shadow: 0 0 50px rgba(228, 224, 212, 0.16), 0 0 100px rgba(228, 224, 212, 0.06); }
+@media (prefers-reduced-motion: reduce) {
+    .net-core { animation: none; }
 }
 
 .hero h1 {
@@ -702,14 +616,14 @@ footer p {
         font-size: 42px;
     }
 
-    .constellation {
-        width: 280px;
-        height: 280px;
+    .hero-visual {
+        width: 300px;
+        height: 300px;
     }
 
-    .star-center {
-        width: 52px;
-        height: 52px;
+    .net-core {
+        width: 88px;
+        height: 88px;
     }
 
     .subtitle {

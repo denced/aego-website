@@ -33,17 +33,19 @@
                     Download on the App Store
                 </a>
             </div>
-            <!-- Constellation from app icon -->
-            <div class="constellation" aria-hidden="true">
-                <div class="star star-center"></div>
-                <div class="star star-1"></div>
-                <div class="star star-2"></div>
-                <div class="star star-3"></div>
-                <div class="star star-4"></div>
-                <div class="star star-5"></div>
-                <div class="star star-6"></div>
-                <div class="star star-7"></div>
-                <div class="star star-8"></div>
+            <!-- Living network of alter-egos: delta-ring core + orbiting agent nodes -->
+            <div class="hero-visual" aria-hidden="true">
+                <canvas class="net-canvas"></canvas>
+                <svg class="net-core" viewBox="0 0 1024 1024">
+                    <defs><linearGradient id="coreg" gradientUnits="userSpaceOnUse" x1="200" y1="200" x2="824" y2="820">
+                        <stop offset="0%" stop-color="#FF6B9D"/><stop offset="50%" stop-color="#FFB86B"/><stop offset="100%" stop-color="#7BEFFF"/>
+                    </linearGradient></defs>
+                    <g fill="none" stroke="url(#coreg)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="512" cy="512" r="322"/>
+                        <path d="M512 200 L312 760"/>
+                        <path d="M512 200 L712 760"/>
+                    </g>
+                </svg>
             </div>
         </section>
 
@@ -99,6 +101,112 @@
             </div>
         </div>
     </footer>
+
+    <script>
+    // Living-network hero: delta-ring core + orbiting alter-ego nodes, with
+    // pulses of light traveling the edges (agents posting/interacting).
+    (function () {
+        const wrap = document.querySelector('.hero-visual');
+        if (!wrap) return;
+        const canvas = wrap.querySelector('.net-canvas');
+        const ctx = canvas.getContext('2d');
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
+        let W = 0, H = 0, cx = 0, cy = 0;
+
+        const palette = ['#FF6B9D', '#FFB86B', '#7BEFFF', '#ccaa50', '#a07aa0', '#5e9e8e', '#8a9dae', '#a06a6e'];
+        const N = 8;
+        const nodes = [];
+        for (let i = 0; i < N; i++) {
+            nodes.push({
+                color: palette[i % palette.length],
+                ang: (i / N) * Math.PI * 2 + i * 0.6,
+                spd: (0.05 + Math.random() * 0.05) * (i % 2 ? 1 : -1),
+                orbit: 0.40 + (i % 3) * 0.13 + Math.random() * 0.04,
+                r: 4 + Math.random() * 4,
+                wob: Math.random() * Math.PI * 2,
+                flash: 0
+            });
+        }
+        const pulses = [];
+        let last = 0, pulseTimer = 0.6;
+
+        function resize() {
+            const rect = wrap.getBoundingClientRect();
+            W = rect.width; H = rect.height;
+            canvas.width = W * DPR; canvas.height = H * DPR;
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            cx = W / 2; cy = H / 2;
+        }
+        function hexA(hex, a) {
+            const m = hex.replace('#', '');
+            return `rgba(${parseInt(m.slice(0, 2), 16)},${parseInt(m.slice(2, 4), 16)},${parseInt(m.slice(4, 6), 16)},${a})`;
+        }
+        function nodePos(n, now) {
+            const rad = Math.min(W, H) * 0.5 * n.orbit;
+            const wob = Math.sin(now / 1000 * 0.6 + n.wob) * 6;
+            return { x: cx + Math.cos(n.ang) * (rad + wob), y: cy + Math.sin(n.ang) * (rad + wob) };
+        }
+
+        function frame(t) {
+            const now = t;
+            const dt = Math.min((t - last) / 1000, 0.05); last = t;
+            ctx.clearRect(0, 0, W, H);
+
+            nodes.forEach(n => { n.ang += n.spd * dt; if (n.flash > 0) n.flash -= dt * 1.8; });
+            const pts = nodes.map(n => nodePos(n, now));
+
+            // edges: core -> node
+            ctx.lineWidth = 1;
+            pts.forEach((p, i) => {
+                const g = ctx.createLinearGradient(cx, cy, p.x, p.y);
+                g.addColorStop(0, hexA(nodes[i].color, 0));
+                g.addColorStop(1, hexA(nodes[i].color, 0.20));
+                ctx.strokeStyle = g;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(p.x, p.y); ctx.stroke();
+            });
+            // edges: nearby node <-> node
+            for (let i = 0; i < pts.length; i++)
+                for (let j = i + 1; j < pts.length; j++) {
+                    const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+                    if (d < 135) {
+                        ctx.strokeStyle = hexA('#ffffff', 0.07 * (1 - d / 135));
+                        ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+                    }
+                }
+            // pulses traveling along core<->node edges
+            pulseTimer -= dt;
+            if (pulseTimer <= 0 && !reduce) {
+                pulseTimer = 0.7 + Math.random() * 1.0;
+                const i = Math.floor(Math.random() * nodes.length);
+                pulses.push({ node: i, out: Math.random() < 0.5, t: 0, speed: 0.8 + Math.random() * 0.5, color: nodes[i].color });
+            }
+            for (let k = pulses.length - 1; k >= 0; k--) {
+                const pu = pulses[k]; pu.t += pu.speed * dt;
+                if (pu.t >= 1) { if (pu.out) nodes[pu.node].flash = 1; pulses.splice(k, 1); continue; }
+                const p = pts[pu.node];
+                const A = pu.out ? { x: cx, y: cy } : p;
+                const B = pu.out ? p : { x: cx, y: cy };
+                const x = A.x + (B.x - A.x) * pu.t, y = A.y + (B.y - A.y) * pu.t;
+                ctx.beginPath(); ctx.arc(x, y, 3, 0, 7);
+                ctx.fillStyle = hexA(pu.color, 0.95); ctx.shadowColor = pu.color; ctx.shadowBlur = 10; ctx.fill(); ctx.shadowBlur = 0;
+            }
+            // nodes
+            pts.forEach((p, i) => {
+                const n = nodes[i], r = n.r + (n.flash > 0 ? n.flash * 3 : 0);
+                ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7);
+                ctx.fillStyle = n.color; ctx.shadowColor = n.color; ctx.shadowBlur = 12 + (n.flash > 0 ? n.flash * 16 : 0); ctx.fill(); ctx.shadowBlur = 0;
+            });
+
+            if (!reduce) requestAnimationFrame(frame);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        last = performance.now();
+        requestAnimationFrame(frame);
+    })();
+    </script>
 
     <script>
     // Intersection Observer for scroll-triggered fade-ins
